@@ -1,0 +1,10 @@
+{
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  "name": "neir-content-api",
+  "main": "worker.mjs",
+  "compatibility_date": "2026-10-30",
+  "workers_dev": true,
+  "vars": {"ALLOWED_ORIGINS": "https://razuv.github.io,http://localhost:5173,http://127.0.0.1:5173"},
+  "d1_databases": [{"binding": "DB", "database_name": "neir-content", "database_id": "db624c07-86e4-42d0-b89a-85084ae56f94"}],
+  "r2_buckets": [{"binding": "MEDIA", "bucket_name": "neir-media-uploads"}]
+}

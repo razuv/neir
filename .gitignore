@@ -1,0 +1,12 @@
+dist/
+node_modules/
+.DS_Store
+
+backend/.dev.vars
+backend/.wrangler/
+.wrangler/
+.admin-credentials
+*.local
+
+public/media/*.mp4
+public/media/*.mov
