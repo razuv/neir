@@ -67,7 +67,7 @@
         video.defaultMuted = true;
         video.playsInline = true;
         video.preload = 'metadata';
-        video.dataset.source = window.NEIR_MEDIA_BASE + videos[key];
+        video.dataset.source = window.NEIR_MEDIA_URL(videos[key]);
         video.addEventListener('ended', () => { if (video === active) select(index + 1); });
         video.addEventListener('play', () => { if (video === active) updatePlayback(); });
         video.addEventListener('pause', () => { if (video === active) updatePlayback(); });
@@ -312,7 +312,7 @@
   gallery.className = 'stories-carousel';
   gallery.setAttribute('role', 'region');
   gallery.setAttribute('aria-label', 'Видео и визуальные истории');
-  gallery.innerHTML = `<div class="stories-track" tabindex="0" aria-label="Карусель видео. Используйте стрелки влево и вправо">${files.map((file,i)=>`<article class="story-card" data-story="${i}"><div class="story-stage"><video data-src="${window.NEIR_MEDIA_BASE}${file}" muted playsinline preload="metadata" aria-label="Визуальная история ${i+1}"></video><button type="button" class="story-select" aria-label="Выбрать видео ${i+1}" aria-pressed="false"><span class="play-icon" aria-hidden="true">▶</span></button><div class="story-controls"><button type="button" class="story-play" aria-label="Приостановить видео">Ⅱ</button><button type="button" class="story-sound">Звук выкл.</button></div><p class="story-error" hidden>Не удалось загрузить видео. <a href="${window.NEIR_MEDIA_BASE}${file}" target="_blank" rel="noopener">Открыть ролик</a></p></div><p class="story-label">NEIR MEDIA / ${String(i+1).padStart(2,'0')}</p></article>`).join('')}</div><div class="stories-nav"><button type="button" class="stories-prev" aria-label="Предыдущее видео"><i class="corner-icon" aria-hidden="true"></i></button><span class="stories-status" aria-live="polite">01 / 06</span><button type="button" class="stories-next" aria-label="Следующее видео"><i class="corner-icon" aria-hidden="true"></i></button></div>`;
+  gallery.innerHTML = `<div class="stories-track" tabindex="0" aria-label="Карусель видео. Используйте стрелки влево и вправо">${files.map((file,i)=>`<article class="story-card" data-story="${i}"><div class="story-stage"><video data-src="${window.NEIR_MEDIA_URL(file)}" muted playsinline preload="metadata" aria-label="Визуальная история ${i+1}"></video><button type="button" class="story-select" aria-label="Выбрать видео ${i+1}" aria-pressed="false"><span class="play-icon" aria-hidden="true">▶</span></button><div class="story-controls"><button type="button" class="story-play" aria-label="Приостановить видео">Ⅱ</button><button type="button" class="story-sound">Звук выкл.</button></div><p class="story-error" hidden>Не удалось загрузить видео. <a href="${window.NEIR_MEDIA_URL(file)}" target="_blank" rel="noopener">Открыть ролик</a></p></div><p class="story-label">NEIR MEDIA / ${String(i+1).padStart(2,'0')}</p></article>`).join('')}</div><div class="stories-nav"><button type="button" class="stories-prev" aria-label="Предыдущее видео"><i class="corner-icon" aria-hidden="true"></i></button><span class="stories-status" aria-live="polite">01 / 06</span><button type="button" class="stories-next" aria-label="Следующее видео"><i class="corner-icon" aria-hidden="true"></i></button></div>`;
   const track = gallery.querySelector('.stories-track');
   const cards = [...gallery.querySelectorAll('.story-card')];
   const media = cards.map(card=>card.querySelector('video'));

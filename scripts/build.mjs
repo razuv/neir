@@ -4,11 +4,11 @@ import path from 'node:path';
 
 export function pagesConfig(apiURL,pagesURL='https://razuv.github.io/neir/') {
   let api,site;
-  try {api=new URL(apiURL);site=new URL(pagesURL);} catch {throw Error('Для Pages укажите NEIR_API_URL — HTTPS-адрес опубликованного API Cloudflare.');}
-  if(api.protocol!=='https:'||api.username||api.password||api.search||api.hash||api.pathname!=='/'||['localhost','127.0.0.1','[::1]'].includes(api.hostname))throw Error('NEIR_API_URL должен быть публичным HTTPS origin без пути, пароля и параметров.');
+  try {api=apiURL?new URL(apiURL):null;site=new URL(pagesURL);} catch {throw Error('Для Pages укажите NEIR_API_URL — HTTPS-адрес опубликованного API Cloudflare.');}
+  if(api && (api.protocol!=='https:'||api.username||api.password||api.search||api.hash||api.pathname!=='/'||['localhost','127.0.0.1','[::1]'].includes(api.hostname)))throw Error('NEIR_API_URL должен быть публичным HTTPS origin без пути, пароля и параметров.');
   if(site.protocol!=='https:'||site.username||site.password||site.search||site.hash)throw Error('PAGES_URL должен быть HTTPS-адресом сайта.');
   if(!site.pathname.endsWith('/'))site.pathname+='/';
-  return {apiURL:api.origin,pagesURL:site.href,basePath:site.pathname};
+  return {apiURL:api?.origin||'',pagesURL:site.href,basePath:site.pathname};
 }
 
 export async function buildSite({outDir='dist',pages=false,apiURL=process.env.NEIR_API_URL,pagesURL=process.env.PAGES_URL}={}) {
@@ -16,13 +16,13 @@ export async function buildSite({outDir='dist',pages=false,apiURL=process.env.NE
   await rm(outDir,{recursive:true,force:true});
   await mkdir(outDir,{recursive:true});
   for(const file of ['index.html','styles.css','app.js','config.js','interactions.js','content-defaults.js','bootstrap.js','runtime-config.js','visual-editor.js'])await copyFile(file,path.join(outDir,file));
-  await cp('public',path.join(outDir,'public'),{recursive:true,filter:source=>!config||!/^video-\d+\.(mp4|mov)$/i.test(path.basename(source))});
+  await cp('public',path.join(outDir,'public'),{recursive:true,filter:source=>!config||path.dirname(source)!==path.join('public','media')||!/^video-\d+\.(mp4|mov)$/i.test(path.basename(source))});
   await cp('admin',path.join(outDir,'admin'),{recursive:true});
   await writeFile(path.join(outDir,'.nojekyll'),'');
   if(config){
-    await writeFile(path.join(outDir,'runtime-config.js'),`window.NEIR_API_URL=${JSON.stringify(config.apiURL)};\nwindow.NEIR_MEDIA_BASE=window.NEIR_API_URL+'/assets/';\n`);
+    await writeFile(path.join(outDir,'runtime-config.js'),`window.NEIR_API_URL=${JSON.stringify(config.apiURL)};\nwindow.NEIR_MEDIA_BASE=${JSON.stringify(config.apiURL?config.apiURL+'/assets/':'public/pages-media/')};\nwindow.NEIR_MEDIA_URL=file=>window.NEIR_MEDIA_BASE+${config.apiURL?'file':"file.replace(/\\.mov$/i,'.mp4')"};\n`);
     let html=await readFile(path.join(outDir,'index.html'),'utf8');
-    html=html.replace('src="public/media/video-4.mp4"',`src="${config.apiURL}/assets/video-4.mp4"`);
+    if(config.apiURL)html=html.replace('src="public/pages-media/video-4.mp4"',`src="${config.apiURL}/assets/video-4.mp4"`);
     html=html.replace('</head>',`<link rel="canonical" href="${config.pagesURL}"></head>`);
     await writeFile(path.join(outDir,'index.html'),html);
     await writeFile(path.join(outDir,'robots.txt'),`User-agent: *\nDisallow: ${config.basePath}admin/\nSitemap: ${config.pagesURL}sitemap.xml\n`);
