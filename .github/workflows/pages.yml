@@ -1,7 +1,5 @@
 name: Publish NEIR MEDIA
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 permissions:
   contents: read
@@ -23,7 +21,10 @@ jobs:
       - name: Test content API
         run: npm test
       - name: Build static site
-        run: npm run build
+        run: npm run build:pages
+        env:
+          NEIR_API_URL: ${{ vars.NEIR_API_URL }}
+          PAGES_URL: https://razuv.github.io/neir/
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

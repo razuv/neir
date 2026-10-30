@@ -30,4 +30,5 @@
   document.querySelectorAll('a[href^="tel:"]').forEach(a=>{a.href='tel:'+window.NEIR_CONFIG.phone;});
   document.querySelectorAll('a[href^="https://wa.me/"]').forEach(a=>{a.href='https://wa.me/'+window.NEIR_CONFIG.phone.replace(/\D/g,'');});
   await load('interactions.js');
+  if(preview && new URLSearchParams(location.search).has('cms-editor') && parent!==window)await load('visual-editor.js');
 })();
